@@ -67,11 +67,26 @@ void setup() {
 
   lcd.begin(16, 2); //sets up rows and columns on the screen
 
-  Serial.print("hola");
+  lcd.print("hola");
+  delay(1000);
 
   Serial.begin(9600);
 
   lcd.clear();
+
+
+
+  lcd.print("How many times does your pet need to be fed in a day?");
+  lcd.print("Press '#' to enter");
+  delay(1000);
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+  numFeeding = input.toInt();
+  Serial.println(numFeeding);
 }
 
 //back from 180 to 0
@@ -124,6 +139,7 @@ double getDistance() {
 // prompt user input to set schedule
 void getTimes(){
   lcd.print("How many times does your pet need to be fed in a day?");
+  lcd.print("Press '#' to enter");
   delay(1000);
 
   while(key != '#'){
@@ -136,6 +152,7 @@ void getTimes(){
   for(int i=0; i < numFeeding; i++){
 
     lcd.print("Enter hour for meal time #" + i);
+    lcd.print("Press '#' to enter");
     delay(3000);
 
   while(key != '#'){
@@ -146,6 +163,7 @@ void getTimes(){
     target = 60*input.toInt();
 
     lcd.print("Enter minutes for meal time #" + i);
+    lcd.print("Press '#' to enter");
     delay(3000);
 
   while(key != '#'){
