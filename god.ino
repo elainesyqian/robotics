@@ -146,9 +146,11 @@ bool time(){
 
   while(true){
 
-    if(countTime = currentTime + 1440) {
-      countTime = currentTime; // important change
+    if(countTime = 1440 - currentTime) { // check when to reset time
+      countTime = 0; 
+      currentTime = 0;
     }
+    
     delay(60000); // count 1 minute
     countTime++;
     for(int i = 0; i < numFeeding; i++) {
