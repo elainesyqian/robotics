@@ -1,15 +1,31 @@
+// Eileen Kuang & Elaine Qian
+// Nov 30, 2023
+// God
+// Automatic pet feeder!!!!!!!!
+
 // Include the servo library:
 #include "Servo.h"
 #include <LiquidCrystal.h>
 #include <Keypad.h>
 
+// Variable declarations
+int currentHour; // user input
+int currentMin; // user input
+int currentTime;
+int countTime; // time the program is counting
+int target;
+int numFeeding; // how many times pet needs to be fed in a day
+int targetTimes[0]; // array of feeding times
+String input = "";
+char key;
+
 // Create a new servo object:
-//Servo myservo;
+Servo myservo;
 
 // Define the servo pin:
-//#define servoPin 9
+#define servoPin 9;
 
-//setup for keypad
+//keypad
 const int ROW_NUM = 4; //four rows
 const int COLUMN_NUM = 4; //four columns
 
@@ -23,9 +39,9 @@ char keys[ROW_NUM][COLUMN_NUM] = {
 byte pin_rows[ROW_NUM] = {29, 28, 27, 26}; //connect to the row pinouts of the keypad
 byte pin_column[COLUMN_NUM] = {25, 24, 23, 22}; //connect to the column pinouts of the keypad
 
-Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM ); // initializing keypad obj
 
-//code for ultrasonic sensor
+//ultrasonic sensor
 const int TRIG_PIN = 20;
 const int ECHO_PIN = 21;
 
@@ -56,7 +72,6 @@ void setup() {
   Serial.begin(9600);
 
   lcd.clear();
-
 }
 
 //back from 180 to 0
@@ -66,6 +81,8 @@ void setup() {
 //}
 
 void loop() {
+
+  /*
   char key = keypad.getKey();
 
   if(key) {
@@ -85,6 +102,8 @@ void loop() {
     }
 
   }
+  delay(1000);
+  */
 
 }
 
@@ -100,4 +119,71 @@ double getDistance() {
   distance = duration * 0.034/2.0;
 
     return distance;
+}
+
+// prompt user input to set schedule
+void getTimes(){
+  lcd.print("How many times does your pet need to be fed in a day?");
+  delay(1000);
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+  numFeeding = input.toInt();
+
+  for(int i=0; i < numFeeding; i++){
+
+    lcd.print("Enter hour for meal time #" + i);
+    delay(3000);
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+    target = 60*input.toInt();
+
+    lcd.print("Enter minutes for meal time #" + i);
+    delay(3000);
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+    target = target + input.toInt();
+    // convert meal time to minutes
+
+    /*
+    key pad user input stuff to get target
+    */
+    targetTimes[i] = target;
+  }
+  lcd.print("Schedule confirmed!");
+  delay(300);
+}
+
+// count time and return if it's a feeding time or not
+bool time(){
+
+  currentTime = (currentHour * 60) + currentMin;
+  countTime = currentTime;
+
+  while(true){
+
+    if(countTime = currentTime + 1440) {
+      countTime = 0;
+    }
+    delay(60000); // count 1 minute
+    countTime++;
+    for(int i = 0; i < numFeeding; i++) {
+
+      if(countTime == targetTimes[i]) 
+        return true;
+
+    }
+    return false;
+  }
 }
