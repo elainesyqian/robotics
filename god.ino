@@ -147,7 +147,7 @@ bool time(){
   while(true){
 
     if(countTime = currentTime + 1440) {
-      countTime = 0;
+      countTime = currentTime; // important change
     }
     delay(60000); // count 1 minute
     countTime++;
