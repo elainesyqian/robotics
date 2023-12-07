@@ -16,12 +16,14 @@ int countTime; // time the program is counting
 int target;
 int numFeeding; // how many times pet needs to be fed in a day
 int targetTimes[0]; // array of feeding times
+String input = "";
+char key;
 
 // Create a new servo object:
 Servo myservo;
 
 // Define the servo pin:
-#define servoPin 9;
+// #define servoPin;
 
 //keypad
 const int ROW_NUM = 4; //four rows
@@ -52,34 +54,56 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 void setup() {
   // Attach the Servo variable to a pin:
-  //myservo.attach(servoPin);
+  myservo.attach(9);
 
 //sweep from 0 to 180
-//  for (int angle = 0; angle <= 180; angle += 1) {
-//    myservo.write(angle);
-//    delay(15);
-//  }
+ for (int angle = 0; angle <= 180; angle += 1) {
+   myservo.write(angle);
+   delay(15);
+ }
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
   lcd.begin(16, 2); //sets up rows and columns on the screen
 
-  Serial.print("hola");
+  lcd.print("hola");
+  delay(1000);
 
   Serial.begin(9600);
 
   lcd.clear();
 
+
+
+  lcd.print("How many times does your pet need to be fed in a day?");
+  delay(3000);
+  lcd.clear();
+  lcd.print("Press '#' to enter");
+
+  while(key != '#'){
+    delay(1000);
+    key = keypad.getKey();
+    if(key != ' ' && key != '#'){
+      input = input + key;
+    }
+    Serial.println(input);
+  }
+
+  numFeeding = input.toInt();
+  Serial.println("numFeeding = " + numFeeding);
+
+  // back from 180 to 0
+  for (int angle = 180; angle >= 0; angle -= 1) {
+   myservo.write(angle);
+   delay(15);
+  }
 }
 
-//back from 180 to 0
-//  for (int angle = 180; angle >= 0; angle -= 1) {
-//    myservo.write(angle);
-//    delay(15);
-//}
 
 void loop() {
+
+  /*
   char key = keypad.getKey();
 
   if(key) {
@@ -100,6 +124,7 @@ void loop() {
 
   }
   delay(1000);
+  */
 
 }
 
@@ -120,15 +145,41 @@ double getDistance() {
 // prompt user input to set schedule
 void getTimes(){
   lcd.print("How many times does your pet need to be fed in a day?");
+  lcd.print("Press '#' to enter");
   delay(1000);
-  /*
-  key pad user input stuff to get numFeeding
-  */
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+  numFeeding = input.toInt();
+
   for(int i=0; i < numFeeding; i++){
 
-    lcd.print("Enter meal time #" + i);
+    lcd.print("Enter hour for meal time #" + i);
+    lcd.print("Press '#' to enter");
     delay(3000);
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+    target = 60*input.toInt();
+
+    lcd.print("Enter minutes for meal time #" + i);
+    lcd.print("Press '#' to enter");
+    delay(3000);
+
+  while(key != '#'){
+      input = input + key;
+      key = keypad.getKey();
+  }
+
+    target = target + input.toInt();
     // convert meal time to minutes
+
     /*
     key pad user input stuff to get target
     */
@@ -146,11 +197,9 @@ bool time(){
 
   while(true){
 
-    if(countTime = 1440 - currentTime) { // check when to reset time
-      countTime = 0; 
-      currentTime = 0;
+    if(countTime = currentTime + 1440) {
+      countTime = 0;
     }
-    
     delay(60000); // count 1 minute
     countTime++;
     for(int i = 0; i < numFeeding; i++) {
