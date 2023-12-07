@@ -74,18 +74,15 @@ void setup() {
 
   lcd.clear();
 
+  lcd.print("How many times does your pet");
+  delay(5000);
+  lcd.print("need to be fed in a day?");
 
-
-  lcd.print("How many times does your pet need to be fed in a day?");
-  lcd.print("Press '#' to enter");
-  delay(1000);
-
-  while(key != '#'){
-      input = input + key;
-      key = keypad.getKey();
+  while (Serial.available() == 0) {
   }
 
-  numFeeding = input.toInt();
+  numFeeding = Serial.parseInt();
+
   Serial.println(numFeeding);
 }
 
