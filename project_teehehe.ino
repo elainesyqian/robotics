@@ -155,9 +155,10 @@ void getTimes(){
   for(int i=0; i < numFeeding; i++){
 
     lcd.setCursor(0,0);
-    lcd.print("Enter hour for");
+    lcd.print("Enter hr for");
     lcd.setCursor(0, 1);
-    lcd.print("meal time #" + i);
+    lcd.print("meal time #");
+    lcd.print(i+1);
     delay(800);
 
     key = keypad.getKey();
@@ -189,9 +190,10 @@ void getTimes(){
     lcd.clear();
 
     lcd.setCursor(0,0);
-    lcd.print("Enter minutes");
+    lcd.print("Enter min for");
     lcd.setCursor(0,1);
-    lcd.print(" for meal time # " + i);
+    lcd.print("meal time #");
+    lcd.print(i+1);
     delay(800);
 
     key = keypad.getKey();
