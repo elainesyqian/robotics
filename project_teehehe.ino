@@ -18,6 +18,10 @@ int numFeeding; // how many times pet needs to be fed in a day
 int targetTimes[0]; // array of feeding times
 String input = "";
 char key;
+int b = 0;
+int a = 180;
+bool flag = true;
+bool galf = false;
 
 // Create a new servo object:
 Servo myservo;
@@ -55,9 +59,6 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 void setup() {
 
   Serial.begin(9600);
-  
-  // Attach the Servo variable to a pin:
-  myservo.attach(9);
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
@@ -65,34 +66,31 @@ void setup() {
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
 
-  releaseFood();
+  myservo.attach(8);
+
+  myservo.write(60);
+
+  delay(500);
+
+  myservo.write(0);
+
+  delay(400);
+
+  myservo.write(60);
+
 }
 
 void loop() {
+  
+  myservo.attach(8);
 
-  /*
-  char key = keypad.getKey();
+  // myservo.write(0);
 
-  if(key) {
-    Serial.println(key);
+  // delay(100);
 
-  if(count == 2) {   
-      delay(500);    
-      lcd.clear();
-      count = 0;
-    }
-    lcd.print(key);  
-    count++; 
+  // myservo.write(180);
 
-    if (key == '#') {
-      Serial.println(getDistance());
-      lcd.print(getDistance());
-    }
-
-  }
-  delay(1000);
-  */
-
+  // delay(100);
 }
 
 //distance function for ultrasonic sensor
@@ -179,7 +177,7 @@ bool time(){
 
   while(true){
 
-    if(countTime = currentTime + 1440) {
+    if(countTime == currentTime + 1440) {
       countTime = 0;
     }
 
@@ -196,20 +194,21 @@ bool time(){
   }
 }
 
-void releaseFood(){
+void releaseFood1(){
 
-  myservo.attach(9);
-
-  /*
-  for(int a = 0; a <= 160; a+= 1){
-    Serial.println(a);
-    myservo.write(a);
-  }*/
-
+  for (int pos = 90; pos <= 180; pos ++) {
+    myservo.write(pos);  // Set the servo position
+    delay(5);           // Wait for the servo to reach the position
+  }
   
-  for(int b = 160; b >= 20; b--){
-    Serial.println(b);
-    myservo.write(b);
+}
+
+void releaseFood2(){
+
+  // Sweep back from 180 to 0 degrees
+  for (int pos = 180; pos >= 90; pos --) {
+    myservo.write(pos);  // Set the servo position
+    delay(5);           // Wait for the servo to reach the position
   }
 
 }
