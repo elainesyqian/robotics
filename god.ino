@@ -20,8 +20,6 @@ String input = "";
 char key;
 int b = 0;
 int a = 180;
-bool flag = true;
-bool galf = false;
 
 // Create a new servo object:
 Servo myservo;
@@ -53,8 +51,12 @@ long duration;
 int distance;
 int count = 0;
 
+// lcd screen
 const int RS = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
+
+// piezo!
+const int PIE = 10;
 
 void setup() {
 
@@ -66,63 +68,34 @@ void setup() {
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
 
-  releaseFood1();
-
-  delay(1000);
+  myservo.attach(8);
   
-  myservo.detach()
+  // while food level is sufficient
+  while(getDistance() < 15.00){ // if??
 
-  releaseFood2();
+  // releasing food 
+  // add if statement for feeding times
+  // myservo.write(60);
 
-  delay(200); 
+  // delay(500);
+
+  // myservo.write(0); // turn left
+
+  // delay(400);
+
+  // myservo.write(60);
+
+  }
+  lcd.print(getDistance()); // 19.00 is the bottom of the bottle empty, 15.00 is the bare minimum.
+
+  pinMode(PIE, OUTPUT);
+  tone(PIE, 1000);
 
 }
 
 void loop() {
+  
 
-
-  /*
-  char key = keypad.getKey();
-
-  if(key) {
-    Serial.println(key);
-
-  if(count == 2) {   
-      delay(500);    
-      lcd.clear();
-      count = 0;
-    }
-    lcd.print(key);  
-    count++; 
-
-    if (key == '#') {
-      Serial.println(getDistance());
-      lcd.print(getDistance());
-    }
-
-  }
-  delay(1000);
-  */
-  myservo.attach(8);
-
-  // if(flag){
-  //   b++;
-  //   if (b<180){
-  //     myservo.write(b);
-  //   } else {
-  //     galf = true;
-  //     flag = false;
-  //   }
-  // }
-
-  // if (galf) {
-  //   a--;
-  //   if(a>0){
-  //     myservo.write(a);
-  //   } else {
-  //     galf = false;
-  //   }
-  // }
 }
 
 //distance function for ultrasonic sensor
@@ -224,23 +197,4 @@ bool time(){
     }
     return false;
   }
-}
-
-void releaseFood1(){
-
-  for (int pos = 90; pos <= 180; pos ++) {
-    myservo.write(pos);  // Set the servo position
-    delay(5);           // Wait for the servo to reach the position
-  }
-  
-}
-
-void releaseFood2(){
-
-  // Sweep back from 180 to 0 degrees
-  for (int pos = 180; pos >= 90; pos --) {
-    myservo.write(pos);  // Set the servo position
-    delay(5);           // Wait for the servo to reach the position
-  }
-
 }
