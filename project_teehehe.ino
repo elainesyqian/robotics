@@ -15,7 +15,7 @@ int currentTime;
 int countTime; // time the program is counting
 int target;
 int numFeeding; // how many times pet needs to be fed in a day
-int targetTimes[0]; // array of feeding times
+int targetTimes[10]; // array of feeding times
 String input = "";
 char key;
 int b = 0;
@@ -53,8 +53,12 @@ long duration;
 int distance;
 int count = 0;
 
+// lcd display
 const int RS = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
+
+// piezo!
+const int PIE = 10;
 
 void setup() {
 
@@ -66,24 +70,38 @@ void setup() {
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
 
-  myservo.attach(8);
+  if(getDistance()>15.00){
+    pinMode(PIE, OUTPUT);
+    tone(PIE, 1047); // C6
+    delay(200);
+    tone(PIE, 1319); // E5
+    delay(200);
+    tone(PIE, 1047); // C6
+    delay(200);
+    tone(PIE, 988); // B5
+    delay(200);
+    tone(PIE, 1047); // C6
+    delay(200);
+    noTone(PIE);
+  }
 
+  myservo.attach(8);
+  //releasing food 
+  //add if statement for feeding times
   myservo.write(60);
 
   delay(500);
 
-  myservo.write(0);
+  myservo.write(0); // turn left
 
   delay(400);
 
   myservo.write(60);
 
+  getTimes();
 }
 
 void loop() {
-  
-  myservo.attach(8);
-
   // myservo.write(0);
 
   // delay(100);
@@ -91,6 +109,7 @@ void loop() {
   // myservo.write(180);
 
   // delay(100);
+
 }
 
 //distance function for ultrasonic sensor
@@ -111,42 +130,104 @@ double getDistance() {
 // prompt user input to set schedule
 void getTimes(){
 
-  lcd.print("How many times does your pet");
-  delay(5000);
-  lcd.print("need to be fed in a day?");
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("How many times");
+  delay(500);
+  lcd.setCursor(0,1);
+  lcd.print("in a day?");
 
-  while (Serial.available() == 0) {
+  char key = keypad.getKey();
+
+  while(key == NO_KEY) {
+    key = keypad.getKey();
   }
 
-  numFeeding = Serial.parseInt();
+  numFeeding = key - '0';
 
-  Serial.println(numFeeding);
+  lcd.clear();
+  lcd.setCursor(0, 0);
 
-  for(int i=1; i <= numFeeding; i++){
+  lcd.print(numFeeding);
+  delay(3000);
+  lcd.clear();
 
-    lcd.print("Enter hour for meal time #" + i);
-    delay(100);
+  for(int i=0; i < numFeeding; i++){
 
+    lcd.setCursor(0,0);
+    lcd.print("Enter hour for");
+    lcd.setCursor(0, 1);
+    lcd.print("meal time #" + i);
+    delay(800);
 
-  while (Serial.available() == 0) {
-  }
+    key = keypad.getKey();
 
-    target = 60*Serial.parseInt();
+    while(key == NO_KEY) {
+      key = keypad.getKey();
+    }
 
-    lcd.print("Enter minutes for meal time #" + i);
-    delay(100);
+    lcd.clear();
+    lcd.setCursor(0,0);
 
-  while (Serial.available() == 0) {
-  }
-
-    target = target + Serial.parseInt();
-    // convert meal time to minutes
-
-    targetTimes[i] = target;
+    lcd.print(key);
+    target = 10*(key - '0');
     
+    key = keypad.getKey();
+
+    while(key == NO_KEY) {
+      key = keypad.getKey();
+    }
+
+    lcd.print(key);
+    target = target + (key - '0');
+    delay(1000);
+    lcd.clear();
+
+    lcd.print(target);
+
+    delay(1000);
+    lcd.clear();
+
+    lcd.setCursor(0,0);
+    lcd.print("Enter minutes");
+    lcd.setCursor(0,1);
+    lcd.print(" for meal time # " + i);
+    delay(800);
+
+    key = keypad.getKey();
+
+    while(key == NO_KEY) {
+      key = keypad.getKey();
+    }
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+
+    lcd.print(key);
+    target = 60*target + 10*(key-'0');
+    
+    key = keypad.getKey();
+
+    while(key == NO_KEY) {
+      key = keypad.getKey();
+    }
+
+    lcd.print(key);
+    target = target + (key - '0');
+    delay(1000);
+    
+    targetTimes[i] = target;
+
   }
-  lcd.print("Schedule confirmed!");
-  delay(300);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("   Schedule");
+  lcd.setCursor(0, 1);
+  lcd.print("  confirmed!");
+  delay(3000);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(targetTimes[0]);
 }
 
 void getCurrentTime(){
@@ -194,21 +275,3 @@ bool time(){
   }
 }
 
-void releaseFood1(){
-
-  for (int pos = 90; pos <= 180; pos ++) {
-    myservo.write(pos);  // Set the servo position
-    delay(5);           // Wait for the servo to reach the position
-  }
-  
-}
-
-void releaseFood2(){
-
-  // Sweep back from 180 to 0 degrees
-  for (int pos = 180; pos >= 90; pos --) {
-    myservo.write(pos);  // Set the servo position
-    delay(5);           // Wait for the servo to reach the position
-  }
-
-}
