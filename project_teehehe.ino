@@ -63,6 +63,7 @@ const int PIE = 10;
 void setup() {
 
   Serial.begin(9600);
+  delay(1000);
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
@@ -70,7 +71,7 @@ void setup() {
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
 
-  if(getDistance()>15.00){
+  if(getDistance()>5.00){
     pinMode(PIE, OUTPUT);
     tone(PIE, 1047); // C6
     delay(200);
@@ -86,6 +87,9 @@ void setup() {
   }
 
   myservo.attach(8);
+
+  lcd.print("welcome!");
+
   //releasing food 
   //add if statement for feeding times
   myservo.write(60);
@@ -221,6 +225,7 @@ void getTimes(){
     targetTimes[i] = target;
 
   }
+  
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("   Schedule");
