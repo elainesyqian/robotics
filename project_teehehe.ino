@@ -23,7 +23,7 @@ char key;
 Servo myservo;
 
 // Define the servo pin:
-#define servoPin 9;
+// #define servoPin;
 
 //keypad
 const int ROW_NUM = 4; //four rows
@@ -53,44 +53,20 @@ const int RS = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 
 void setup() {
-  // Attach the Servo variable to a pin:
-  //myservo.attach(servoPin);
 
-//sweep from 0 to 180
-//  for (int angle = 0; angle <= 180; angle += 1) {
-//    myservo.write(angle);
-//    delay(15);
-//  }
+  Serial.begin(9600);
+  
+  // Attach the Servo variable to a pin:
+  myservo.attach(9);
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
   lcd.begin(16, 2); //sets up rows and columns on the screen
-
-  lcd.print("hola");
-  delay(1000);
-
-  Serial.begin(9600);
-
   lcd.clear();
 
-  lcd.print("How many times does your pet");
-  delay(5000);
-  lcd.print("need to be fed in a day?");
-
-  while (Serial.available() == 0) {
-  }
-
-  numFeeding = Serial.parseInt();
-
-  Serial.println(numFeeding);
+  releaseFood();
 }
-
-//back from 180 to 0
-//  for (int angle = 180; angle >= 0; angle -= 1) {
-//    myservo.write(angle);
-//    delay(15);
-//}
 
 void loop() {
 
@@ -121,6 +97,7 @@ void loop() {
 
 //distance function for ultrasonic sensor
 double getDistance() {
+
   digitalWrite(TRIG_PIN, LOW);
   delay(2);
   digitalWrite(TRIG_PIN, HIGH);
@@ -130,54 +107,68 @@ double getDistance() {
   duration = pulseIn(ECHO_PIN, HIGH);
   distance = duration * 0.034/2.0;
 
-    return distance;
+  return distance;
 }
 
 // prompt user input to set schedule
 void getTimes(){
-  lcd.print("How many times does your pet need to be fed in a day?");
-  lcd.print("Press '#' to enter");
-  delay(1000);
 
-  while(key != '#'){
-      input = input + key;
-      key = keypad.getKey();
+  lcd.print("How many times does your pet");
+  delay(5000);
+  lcd.print("need to be fed in a day?");
+
+  while (Serial.available() == 0) {
   }
 
-  numFeeding = input.toInt();
+  numFeeding = Serial.parseInt();
 
-  for(int i=0; i < numFeeding; i++){
+  Serial.println(numFeeding);
+
+  for(int i=1; i <= numFeeding; i++){
 
     lcd.print("Enter hour for meal time #" + i);
-    lcd.print("Press '#' to enter");
-    delay(3000);
+    delay(100);
 
-  while(key != '#'){
-      input = input + key;
-      key = keypad.getKey();
+
+  while (Serial.available() == 0) {
   }
 
-    target = 60*input.toInt();
+    target = 60*Serial.parseInt();
 
     lcd.print("Enter minutes for meal time #" + i);
-    lcd.print("Press '#' to enter");
-    delay(3000);
+    delay(100);
 
-  while(key != '#'){
-      input = input + key;
-      key = keypad.getKey();
+  while (Serial.available() == 0) {
   }
 
-    target = target + input.toInt();
+    target = target + Serial.parseInt();
     // convert meal time to minutes
 
-    /*
-    key pad user input stuff to get target
-    */
     targetTimes[i] = target;
+    
   }
   lcd.print("Schedule confirmed!");
   delay(300);
+}
+
+void getCurrentTime(){
+  lcd.print("What is the current hour?");
+  delay(100);
+
+  while (Serial.available() == 0) {
+  }
+
+  currentHour = Serial.parseInt();
+
+  lcd.print("What is the current minutes?");
+  delay(100);
+
+  while (Serial.available() == 0) {
+  }
+
+  currentMin = Serial.parseInt();
+
+  lcd.print("Time confirmed!");
 }
 
 // count time and return if it's a feeding time or not
@@ -191,8 +182,10 @@ bool time(){
     if(countTime = currentTime + 1440) {
       countTime = 0;
     }
+
     delay(60000); // count 1 minute
     countTime++;
+
     for(int i = 0; i < numFeeding; i++) {
 
       if(countTime == targetTimes[i]) 
@@ -201,4 +194,22 @@ bool time(){
     }
     return false;
   }
+}
+
+void releaseFood(){
+
+  myservo.attach(9);
+
+  /*
+  for(int a = 0; a <= 160; a+= 1){
+    Serial.println(a);
+    myservo.write(a);
+  }*/
+
+  
+  for(int b = 160; b >= 20; b--){
+    Serial.println(b);
+    myservo.write(b);
+  }
+
 }
