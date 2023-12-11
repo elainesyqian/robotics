@@ -39,8 +39,8 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'*','0','#', 'D'}
 };
 
-byte pin_rows[ROW_NUM] = {29, 28, 27, 26}; //connect to the row pinouts of the keypad
-byte pin_column[COLUMN_NUM] = {25, 24, 23, 22}; //connect to the column pinouts of the keypad
+byte pin_rows[ROW_NUM] = {A7, A6, A5, A4}; //connect to the row pinouts of the keypad
+byte pin_column[COLUMN_NUM] = {A3, A2, A1, A0}; //connect to the column pinouts of the keypad
 
 Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM ); // initializing keypad obj
 
