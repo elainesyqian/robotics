@@ -20,8 +20,7 @@ String input = "";
 char key;
 int b = 0;
 int a = 180;
-bool flag = true;
-bool galf = false;
+int flag = 0;
 
 // Create a new servo object:
 Servo myservo;
@@ -67,12 +66,50 @@ void setup() {
 
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+  pinMode(PIE, OUTPUT);
 
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
 
-  if(getDistance()>5.00){
-    pinMode(PIE, OUTPUT);
+  myservo.attach(8);
+  myservo.write(60);
+
+  lcd.print("    Welcome:");
+  lcd.setCursor(0, 1);
+  lcd.print("Auto Pet Feeder!");
+  delay(5000);
+
+  getTimes();
+
+  getCurrentTime();
+
+  currentTime = (currentHour * 60) + currentMin;
+  countTime = currentTime;
+}
+
+void loop() {
+
+  if(time()){
+    //releasing food 
+    //add if statement for feeding times
+    myservo.write(60);
+
+    delay(500);
+
+    myservo.write(0); // turn left
+
+    delay(400);
+
+    myservo.write(60);
+  } 
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Next feeding time: ");
+  lcd.setCursor(0,1);
+  lcd.print("");
+
+  if(getDistance()>15.00 && flag%2 == 0){
     tone(PIE, 1047); // C6
     delay(200);
     tone(PIE, 1319); // E5
@@ -85,34 +122,7 @@ void setup() {
     delay(200);
     noTone(PIE);
   }
-
-  myservo.attach(8);
-
-  lcd.print("welcome!");
-
-  //releasing food 
-  //add if statement for feeding times
-  myservo.write(60);
-
-  delay(500);
-
-  myservo.write(0); // turn left
-
-  delay(400);
-
-  myservo.write(60);
-
-  getTimes();
-}
-
-void loop() {
-  // myservo.write(0);
-
-  // delay(100);
-
-  // myservo.write(180);
-
-  // delay(100);
+  flag++;
 
 }
 
@@ -223,9 +233,8 @@ void getTimes(){
     delay(1000);
     
     targetTimes[i] = target;
-
   }
-  
+
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("   Schedule");
@@ -233,52 +242,91 @@ void getTimes(){
   lcd.print("  confirmed!");
   delay(3000);
   lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print(targetTimes[0]);
 }
 
 void getCurrentTime(){
-  lcd.print("What is the current hour?");
-  delay(100);
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("What is the");
+  lcd.setCursor(0,1);
+  lcd.print("current hour?");
+  
+  key = keypad.getKey();
 
-  while (Serial.available() == 0) {
+  while(key == NO_KEY) {
+    key = keypad.getKey();
   }
 
-  currentHour = Serial.parseInt();
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(key);
+  currentHour = 10*(key-'0');
 
-  lcd.print("What is the current minutes?");
-  delay(100);
+  key = keypad.getKey();
 
-  while (Serial.available() == 0) {
+  while(key == NO_KEY) {
+    key = keypad.getKey();
   }
 
-  currentMin = Serial.parseInt();
+  lcd.print(key);
+  currentHour = currentHour + (key-'0');
+  delay(1000);
 
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("What is the");
+  lcd.setCursor(0,1);
+  lcd.print("current minutes?");
+
+  key = keypad.getKey();
+
+  while(key == NO_KEY) {
+    key = keypad.getKey();
+  }
+
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(key);
+  currentMin = 10*(key-'0');
+
+  key = keypad.getKey();
+
+  while(key == NO_KEY) {
+    key = keypad.getKey();
+  }
+
+  lcd.print(key);
+  currentMin = currentMin + (key-'0');
+  delay(1000);
+
+  lcd.clear();
+  lcd.setCursor(0,0);
   lcd.print("Time confirmed!");
+  delay(3000);
+  lcd.clear();
 }
 
 // count time and return if it's a feeding time or not
 bool time(){
 
-  currentTime = (currentHour * 60) + currentMin;
-  countTime = currentTime;
-
-  while(true){
-
-    if(countTime == currentTime + 1440) {
-      countTime = 0;
-    }
-
-    delay(60000); // count 1 minute
-    countTime++;
-
-    for(int i = 0; i < numFeeding; i++) {
-
-      if(countTime == targetTimes[i]) 
-        return true;
-
-    }
-    return false;
+  if(countTime == currentTime + 1440) {
+    countTime = 0;
   }
+
+  delay(60000); // count 1 minute
+  countTime++;
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print(countTime);
+
+  for(int i = 0; i < numFeeding; i++) {
+
+    if(countTime == targetTimes[i]) 
+      return true;
+
+  }
+  
+  return false;
+
 }
 
