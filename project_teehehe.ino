@@ -18,9 +18,6 @@ int numFeeding; // how many times pet needs to be fed in a day
 int targetTimes[10]; // array of feeding times
 String input = "";
 char key;
-int b = 0;
-int a = 180;
-int flag = 0;
 
 // Create a new servo object:
 Servo myservo;
@@ -52,7 +49,6 @@ const int ECHO_PIN = 21;
 
 long duration;
 int distance;
-int count = 0;
 
 // lcd display
 const int RS = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
@@ -95,17 +91,13 @@ void loop() {
     //releasing food 
     //add if statement for feeding times
     myservo.write(60);
-
     delay(500);
-
     myservo.write(0); // turn left
-
     delay(400);
-
     myservo.write(60);
   } 
 
-  if(getDistance()>14.00 && flag%2 == 0){
+  if(getDistance()>14.00){
     tone(PIE, 1047); // C6
     delay(200);
     tone(PIE, 1319); // E5
@@ -118,7 +110,6 @@ void loop() {
     delay(200);
     noTone(PIE);
   }
-  flag++;
 
 }
 
@@ -295,6 +286,8 @@ void getCurrentTime(){
   lcd.print("Time confirmed!");
   delay(3000);
   lcd.clear();
+
+  firstNextFeeding();
 }
 
 // count time and return if it's a feeding time or not
@@ -306,43 +299,69 @@ bool time(){
 
   delay(60000); // count 1 minute
   countTime++;
-  lcd.clear();
-  lcd.setCursor(0,0);
 
   for(int i = 0; i < numFeeding; i++) {
 
     if(countTime == targetTimes[i]) {
-
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Next feeding");
-      lcd.setCursor(0,1);
-      lcd.print("time: ");
-      
-      if (targetTimes[i+1] == 0) {
-        lcd.print((targetTimes[0] - (targetTimes[0]%60))/60);
-        lcd.print(":");
-        if((targetTimes[0]%60) < 10) {
-          lcd.print("0");
-          lcd.print(targetTimes[0]%60);
-        } else {
-          lcd.print(targetTimes[0]%60);
-        }
-      } else {
-        lcd.print((targetTimes[i+1] - (targetTimes[i+1]%60))/60);
-        lcd.print(":");
-        if((targetTimes[i+1]%60) < 10) {
-          lcd.print("0");
-          lcd.print(targetTimes[i+1]%60);
-        } else {
-          lcd.print(targetTimes[i+1]%60);
-        }
-      }
-
+      nextFeeding(i);
       return true;
     }
-
   }
   return false;
+}
+
+void nextFeeding(int i) {
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Next feeding");
+  lcd.setCursor(0,1);
+  lcd.print("time: ");
+      
+    if (targetTimes[i+1] == 0) {
+      lcd.print((targetTimes[0] - (targetTimes[0]%60))/60);
+      lcd.print(":");
+      if((targetTimes[0]%60) < 10) {
+        lcd.print("0");
+        lcd.print(targetTimes[0]%60);
+      } else {
+          lcd.print(targetTimes[0]%60);
+      }
+    } else {
+      lcd.print((targetTimes[i+1] - (targetTimes[i+1]%60))/60);
+      lcd.print(":");
+      if((targetTimes[i+1]%60) < 10) {
+        lcd.print("0");
+        lcd.print(targetTimes[i+1]%60);
+      } else {
+        lcd.print(targetTimes[i+1]%60);
+      }
+    }
+}
+
+void firstNextFeeding(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Next feeding");
+  lcd.setCursor(0,1);
+  lcd.print("time: ");
+
+  int nextTime = 1440;
+  int a;
+
+  for (int i = 0; i < numFeeding; i++){
+    if(targetTimes[i] - currentTime < nextTime) {
+      a = i;
+      nextTime = targetTimes[i] - currentTime;
+    }
+  }
+
+  lcd.print((targetTimes[a] - (targetTimes[a]%60))/60);
+  lcd.print(":");
+  if((targetTimes[a]%60) < 10) {
+    lcd.print("0");
+    lcd.print(targetTimes[a]%60);
+  } else {
+    lcd.print(targetTimes[a]%60);
+  }
 }
 
