@@ -39,6 +39,8 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'*','0','#', 'D'}
 };
 
+//byte pin_rows[ROW_NUM] = {29, 28, 27, 26}; //connect to the row pinouts of the keypad
+//byte pin_column[COLUMN_NUM] = {25, 24, 23, 22}; //connect to the column pinouts of the keypad
 byte pin_rows[ROW_NUM] = {A7, A6, A5, A4}; //connect to the row pinouts of the keypad
 byte pin_column[COLUMN_NUM] = {A3, A2, A1, A0}; //connect to the column pinouts of the keypad
 
@@ -103,13 +105,7 @@ void loop() {
     myservo.write(60);
   } 
 
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Next feeding time: ");
-  lcd.setCursor(0,1);
-  lcd.print("");
-
-  if(getDistance()>15.00 && flag%2 == 0){
+  if(getDistance()>14.00 && flag%2 == 0){
     tone(PIE, 1047); // C6
     delay(200);
     tone(PIE, 1319); // E5
@@ -195,11 +191,6 @@ void getTimes(){
 
     lcd.print(key);
     target = target + (key - '0');
-    delay(1000);
-    lcd.clear();
-
-    lcd.print(target);
-
     delay(1000);
     lcd.clear();
 
@@ -317,16 +308,41 @@ bool time(){
   countTime++;
   lcd.clear();
   lcd.setCursor(0,0);
-  lcd.print(countTime);
 
   for(int i = 0; i < numFeeding; i++) {
 
-    if(countTime == targetTimes[i]) 
+    if(countTime == targetTimes[i]) {
+
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Next feeding");
+      lcd.setCursor(0,1);
+      lcd.print("time: ");
+      
+      if (targetTimes[i+1] == 0) {
+        lcd.print((targetTimes[0] - (targetTimes[0]%60))/60);
+        lcd.print(":");
+        if((targetTimes[0]%60) < 10) {
+          lcd.print("0");
+          lcd.print(targetTimes[0]%60);
+        } else {
+          lcd.print(targetTimes[0]%60);
+        }
+      } else {
+        lcd.print((targetTimes[i+1] - (targetTimes[i+1]%60))/60);
+        lcd.print(":");
+        if((targetTimes[i+1]%60) < 10) {
+          lcd.print("0");
+          lcd.print(targetTimes[i+1]%60);
+        } else {
+          lcd.print(targetTimes[i+1]%60);
+        }
+      }
+
       return true;
+    }
 
   }
-  
   return false;
-
 }
 
