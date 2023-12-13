@@ -345,28 +345,42 @@ void nextFeeding(int i) {
 
   // converts minutes to print in hr:min
   if (targetTimes[i+1] == 0) { // accounts for empty cells in array
+    
     lcd.print((targetTimes[0] - (targetTimes[0]%60))/60); 
     lcd.print(":");
+    
     if((targetTimes[0]%60) < 10) { // prints 0 before single-digit minutes
       lcd.print("0");
       lcd.print(targetTimes[0]%60);
+      
     } else {
+      
         lcd.print(targetTimes[0]%60); // prints minutes
+
     }
+    
   } else {
+    
     lcd.print((targetTimes[i+1] - (targetTimes[i+1]%60))/60); // prints hours
     lcd.print(":");
+    
     if((targetTimes[i+1]%60) < 10) { // prints 0 before single-digit minutes
+      
       lcd.print("0");
       lcd.print(targetTimes[i+1]%60);
+      
     } else {
+      
       lcd.print(targetTimes[i+1]%60); // prints minutes
+    
     }
+  
   }
+
 }
 
 // prints next feeding time before the first feeding has already occurred; must check the next closest feeding time regardless of order
-void firstNextFeeding(){
+void firstNextFeeding() {
 
   // declare local variables
   int nextTime = 1440;
@@ -381,20 +395,29 @@ void firstNextFeeding(){
 
   // loops through current feeding times
   for (int i = 0; i < numFeeding; i++){
+    
     if((targetTimes[i] - currentTime < nextTime) && (targetTimes[i] - currentTime >= 0)) {
+      
       a = i;
       nextTime = targetTimes[i] - currentTime;
+      
     }
+    
   }
 
   // converts minutes to print in hr:min
   lcd.print((targetTimes[a] - (targetTimes[a]%60))/60); // hours
   lcd.print(":");
   if((targetTimes[a]%60) < 10) { // prints 0 before single-digit minutes
+    
     lcd.print("0");
     lcd.print(targetTimes[a]%60);
+    
   } else {
+    
     lcd.print(targetTimes[a]%60); // double-digit minutes
+    
   }
+  
 }
 
