@@ -1,9 +1,9 @@
 // Eileen Kuang & Elaine Qian
-// Nov 30, 2023
-// God
-// Automatic pet feeder!!!!!!!!
+// December 12, 2023
+// Automatic pet feeder
+// Sets scheduled feeding times and dispenses pet food
 
-// Include the servo library:
+// Include libraries for servo, lcd, and keypad
 #include "Servo.h"
 #include <LiquidCrystal.h>
 #include <Keypad.h>
@@ -22,12 +22,9 @@ char key;
 // Create a new servo object:
 Servo myservo;
 
-// Define the servo pin:
-// #define servoPin;
-
-//keypad
-const int ROW_NUM = 4; //four rows
-const int COLUMN_NUM = 4; //four columns
+// keypad
+const int ROW_NUM = 4; // four rows
+const int COLUMN_NUM = 4; // four columns
 
 char keys[ROW_NUM][COLUMN_NUM] = {
   {'1','2','3', 'A'},
@@ -36,12 +33,10 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'*','0','#', 'D'}
 };
 
-//byte pin_rows[ROW_NUM] = {29, 28, 27, 26}; //connect to the row pinouts of the keypad
-//byte pin_column[COLUMN_NUM] = {25, 24, 23, 22}; //connect to the column pinouts of the keypad
 byte pin_rows[ROW_NUM] = {A7, A6, A5, A4}; //connect to the row pinouts of the keypad
 byte pin_column[COLUMN_NUM] = {A3, A2, A1, A0}; //connect to the column pinouts of the keypad
 
-Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM ); // initializing keypad obj
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM ); // initializing keypad object
 
 //ultrasonic sensor
 const int TRIG_PIN = 20;
