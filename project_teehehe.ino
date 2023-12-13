@@ -9,6 +9,7 @@
 #include <Keypad.h>
 
 // Variable declarations
+
 // keypad
 const int ROW_NUM = 4; // four rows
 const int COLUMN_NUM = 4; // four columns
@@ -56,6 +57,7 @@ void setup() {
   Serial.begin(9600);
   delay(1000);
 
+  // setting up in/out pins
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
   pinMode(PIE, OUTPUT);
