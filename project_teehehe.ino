@@ -1,7 +1,7 @@
 // Eileen Kuang & Elaine Qian
 // December 12, 2023
 // Automatic pet feeder
-// Sets scheduled feeding times and dispenses pet food
+// Robot that sets scheduled feeding times and dispenses pet food
 
 // Include libraries for servo, lcd, and keypad
 #include "Servo.h"
