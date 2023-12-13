@@ -9,22 +9,31 @@
 #include <Keypad.h>
 
 // Variable declarations
+// keypad
+const int ROW_NUM = 4; // four rows
+const int COLUMN_NUM = 4; // four columns
+//ultrasonic sensor
+const int TRIG_PIN = 20;
+const int ECHO_PIN = 21;
+// lcd display
+const int RS = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
+// piezo!
+const int PIE = 10;
+
+long duration;
+int distance;
 int currentHour; // user input
 int currentMin; // user input
 int currentTime;
 int countTime; // time the program is counting
-int target;
+int target; // dispensing time
 int numFeeding; // how many times pet needs to be fed in a day
 int targetTimes[10]; // array of feeding times
-String input = "";
+String input = ""; 
 char key;
 
 // Create a new servo object:
 Servo myservo;
-
-// keypad
-const int ROW_NUM = 4; // four rows
-const int COLUMN_NUM = 4; // four columns
 
 char keys[ROW_NUM][COLUMN_NUM] = {
   {'1','2','3', 'A'},
@@ -33,24 +42,14 @@ char keys[ROW_NUM][COLUMN_NUM] = {
   {'*','0','#', 'D'}
 };
 
-byte pin_rows[ROW_NUM] = {A7, A6, A5, A4}; //connect to the row pinouts of the keypad
-byte pin_column[COLUMN_NUM] = {A3, A2, A1, A0}; //connect to the column pinouts of the keypad
+byte pin_rows[ROW_NUM] = {A7, A6, A5, A4}; // connect to the row pinouts of the keypad
+byte pin_column[COLUMN_NUM] = {A3, A2, A1, A0}; // connect to the column pinouts of the keypad
 
-Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM ); // initializing keypad object
+// initializing keypad object
+Keypad keypad = Keypad(makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM ); 
 
-//ultrasonic sensor
-const int TRIG_PIN = 20;
-const int ECHO_PIN = 21;
-
-long duration;
-int distance;
-
-// lcd display
-const int RS = 12, EN = 11, D4 = 5, D5 = 4, D6 = 3, D7 = 2;
+// initializing lcd object
 LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
-
-// piezo!
-const int PIE = 10;
 
 void setup() {
 
@@ -73,28 +72,33 @@ void setup() {
   lcd.print("Auto Pet Feeder!");
   delay(5000);
 
+  // prompt user input
   getTimes();
-
   getCurrentTime();
 
   // converting time
   currentTime = (currentHour * 60) + currentMin;
   countTime = currentTime;
+  
 }
 
 void loop() {
 
+  // counting time
   if(time()){
+    
     //releasing food 
     myservo.write(60);
     delay(500);
     myservo.write(0); // turn left
     delay(400);
     myservo.write(60);
+    
   } 
 
   // piezo alert when food supply is low
   if(getDistance()>14.00){
+    
     tone(PIE, 1047); // C6
     delay(200);
     tone(PIE, 1319); // E5
@@ -106,11 +110,12 @@ void loop() {
     tone(PIE, 1047); // C6
     delay(200);
     noTone(PIE);
+    
   }
 
-}
+} // end of loop
 
-//distance function for ultrasonic sensor
+// distance function for ultrasonic sensor, returns distance in centimetres
 double getDistance() {
 
   digitalWrite(TRIG_PIN, LOW);
@@ -128,6 +133,7 @@ double getDistance() {
 // prompt user input to set schedule
 void getTimes(){
 
+  // display message
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("How many times");
@@ -137,6 +143,7 @@ void getTimes(){
 
   char key = keypad.getKey();
 
+  // loops while there's no user input, exits when key has a value
   while(key == NO_KEY) {
     key = keypad.getKey();
   }
@@ -153,6 +160,7 @@ void getTimes(){
   // prompts user input for number of feeding times per day
   for(int i=0; i < numFeeding; i++){
 
+    // display message
     lcd.setCursor(0,0);
     lcd.print("Enter hr for");
     lcd.setCursor(0, 1);
@@ -162,6 +170,7 @@ void getTimes(){
 
     key = keypad.getKey();
 
+    // loops while there's no user input, exits when key has a value
     while(key == NO_KEY) {
       key = keypad.getKey();
     }
@@ -170,19 +179,21 @@ void getTimes(){
     lcd.setCursor(0,0);
 
     lcd.print(key);
-    target = 10*(key - '0');
+    target = 10*(key - '0'); // converting key code
     
     key = keypad.getKey();
-
+    
+    // takes a second key value for the second digit
     while(key == NO_KEY) {
       key = keypad.getKey();
     }
 
     lcd.print(key);
-    target = target + (key - '0');
+    target = target + (key - '0'); // converting key code
     delay(1000);
     lcd.clear();
 
+    // display message for minutes
     lcd.setCursor(0,0);
     lcd.print("Enter min for");
     lcd.setCursor(0,1);
@@ -192,6 +203,7 @@ void getTimes(){
 
     key = keypad.getKey();
 
+    // takes first digit
     while(key == NO_KEY) {
       key = keypad.getKey();
     }
@@ -200,16 +212,17 @@ void getTimes(){
     lcd.setCursor(0,0);
 
     lcd.print(key);
-    target = 60*target + 10*(key-'0');
+    target = 60*target + 10*(key-'0'); // converting key code
     
     key = keypad.getKey();
 
+    // takes second digit
     while(key == NO_KEY) {
       key = keypad.getKey();
     }
 
     lcd.print(key);
-    target = target + (key - '0');
+    target = target + (key - '0'); // converting key code
     delay(1000);
     
     targetTimes[i] = target;
@@ -223,6 +236,7 @@ void getTimes(){
   lcd.print("  confirmed!");
   delay(3000);
   lcd.clear();
+  
 }
 
 // prompts user input for current time and converts time to minutes
@@ -235,6 +249,7 @@ void getCurrentTime(){
   
   key = keypad.getKey();
 
+  // first digit
   while(key == NO_KEY) {
     key = keypad.getKey();
   }
@@ -242,18 +257,20 @@ void getCurrentTime(){
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(key);
-  currentHour = 10*(key-'0');
+  currentHour = 10*(key-'0'); // converting key code
 
   key = keypad.getKey();
 
+  // second digit
   while(key == NO_KEY) {
     key = keypad.getKey();
   }
 
   lcd.print(key);
-  currentHour = currentHour + (key-'0');
+  currentHour = currentHour + (key-'0'); // adding to hours
   delay(1000);
 
+  // display message
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("What is the");
@@ -262,6 +279,7 @@ void getCurrentTime(){
 
   key = keypad.getKey();
 
+  // first digit
   while(key == NO_KEY) {
     key = keypad.getKey();
   }
@@ -269,25 +287,29 @@ void getCurrentTime(){
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(key);
-  currentMin = 10*(key-'0');
+  currentMin = 10*(key-'0'); // converting key code
 
   key = keypad.getKey();
 
+  // second digit
   while(key == NO_KEY) {
     key = keypad.getKey();
   }
 
   lcd.print(key);
-  currentMin = currentMin + (key-'0');
+  currentMin = currentMin + (key-'0'); // converting key code
   delay(1000);
 
+  // Confirmation message
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Time confirmed!");
   delay(3000);
   lcd.clear();
 
-  firstNextFeeding();
+  // display next feeding time
+  firstNextFeeding(); 
+  
 }
 
 // counts time and returns if it's a feeding time or not
@@ -313,35 +335,6 @@ bool time(){
 
 // prints next feeding time in hours and minutes, after first feeding has already occurred
 void nextFeeding(int i) {
-  lcd.clear();
-  lcd.setCursor(0,0);
-  lcd.print("Next feeding");
-  lcd.setCursor(0,1);
-  lcd.print("time: ");
-      
-    if (targetTimes[i+1] == 0) {
-      lcd.print((targetTimes[0] - (targetTimes[0]%60))/60);
-      lcd.print(":");
-      if((targetTimes[0]%60) < 10) {
-        lcd.print("0");
-        lcd.print(targetTimes[0]%60);
-      } else {
-          lcd.print(targetTimes[0]%60);
-      }
-    } else {
-      lcd.print((targetTimes[i+1] - (targetTimes[i+1]%60))/60);
-      lcd.print(":");
-      if((targetTimes[i+1]%60) < 10) {
-        lcd.print("0");
-        lcd.print(targetTimes[i+1]%60);
-      } else {
-        lcd.print(targetTimes[i+1]%60);
-      }
-    }
-}
-
-// prints next feeding time before the first feeding has already occurred; must check the next closest feeding time regardless of order
-void firstNextFeeding(){
 
   // display message
   lcd.clear();
@@ -350,9 +343,41 @@ void firstNextFeeding(){
   lcd.setCursor(0,1);
   lcd.print("time: ");
 
+  // converts minutes to print in hr:min
+  if (targetTimes[i+1] == 0) { // accounts for empty cells in array
+    lcd.print((targetTimes[0] - (targetTimes[0]%60))/60); 
+    lcd.print(":");
+    if((targetTimes[0]%60) < 10) { // prints 0 before single-digit minutes
+      lcd.print("0");
+      lcd.print(targetTimes[0]%60);
+    } else {
+        lcd.print(targetTimes[0]%60); // prints minutes
+    }
+  } else {
+    lcd.print((targetTimes[i+1] - (targetTimes[i+1]%60))/60); // prints hours
+    lcd.print(":");
+    if((targetTimes[i+1]%60) < 10) { // prints 0 before single-digit minutes
+      lcd.print("0");
+      lcd.print(targetTimes[i+1]%60);
+    } else {
+      lcd.print(targetTimes[i+1]%60); // prints minutes
+    }
+  }
+}
+
+// prints next feeding time before the first feeding has already occurred; must check the next closest feeding time regardless of order
+void firstNextFeeding(){
+
   // declare local variables
   int nextTime = 1440;
   int a;
+  
+  // display message
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("Next feeding");
+  lcd.setCursor(0,1);
+  lcd.print("time: ");
 
   // loops through current feeding times
   for (int i = 0; i < numFeeding; i++){
@@ -362,13 +387,14 @@ void firstNextFeeding(){
     }
   }
 
-  lcd.print((targetTimes[a] - (targetTimes[a]%60))/60);
+  // converts minutes to print in hr:min
+  lcd.print((targetTimes[a] - (targetTimes[a]%60))/60); // hours
   lcd.print(":");
-  if((targetTimes[a]%60) < 10) {
+  if((targetTimes[a]%60) < 10) { // prints 0 before single-digit minutes
     lcd.print("0");
     lcd.print(targetTimes[a]%60);
   } else {
-    lcd.print(targetTimes[a]%60);
+    lcd.print(targetTimes[a]%60); // double-digit minutes
   }
 }
 
