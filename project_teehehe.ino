@@ -61,12 +61,13 @@ void setup() {
   pinMode(ECHO_PIN, INPUT);
   pinMode(PIE, OUTPUT);
 
-  lcd.begin(16, 2); //sets up rows and columns on the screen
+  lcd.begin(16, 2); // sets up rows and columns on the screen
   lcd.clear();
 
   myservo.attach(8);
   myservo.write(60);
 
+  // Welcome message
   lcd.print("    Welcome:");
   lcd.setCursor(0, 1);
   lcd.print("Auto Pet Feeder!");
@@ -76,6 +77,7 @@ void setup() {
 
   getCurrentTime();
 
+  // converting time
   currentTime = (currentHour * 60) + currentMin;
   countTime = currentTime;
 }
@@ -84,7 +86,6 @@ void loop() {
 
   if(time()){
     //releasing food 
-    //add if statement for feeding times
     myservo.write(60);
     delay(500);
     myservo.write(0); // turn left
@@ -92,6 +93,7 @@ void loop() {
     myservo.write(60);
   } 
 
+  // piezo alert when food supply is low
   if(getDistance()>14.00){
     tone(PIE, 1047); // C6
     delay(200);
@@ -148,6 +150,7 @@ void getTimes(){
   delay(3000);
   lcd.clear();
 
+  // prompts user input for number of feeding times per day
   for(int i=0; i < numFeeding; i++){
 
     lcd.setCursor(0,0);
@@ -212,6 +215,7 @@ void getTimes(){
     targetTimes[i] = target;
   }
 
+  // Confirmation message
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("   Schedule");
@@ -221,6 +225,7 @@ void getTimes(){
   lcd.clear();
 }
 
+// prompts user input for current time and converts time to minutes
 void getCurrentTime(){
   lcd.clear();
   lcd.setCursor(0,0);
@@ -285,7 +290,7 @@ void getCurrentTime(){
   firstNextFeeding();
 }
 
-// count time and return if it's a feeding time or not
+// counts time and returns if it's a feeding time or not
 bool time(){
 
   if(countTime == currentTime + 1440) {
@@ -295,6 +300,7 @@ bool time(){
   delay(60000); // count 1 minute
   countTime++;
 
+  // loops through all target times
   for(int i = 0; i < numFeeding; i++) {
 
     if(countTime == targetTimes[i]) {
@@ -305,6 +311,7 @@ bool time(){
   return false;
 }
 
+// prints next feeding time in hours and minutes, after first feeding has already occurred
 void nextFeeding(int i) {
   lcd.clear();
   lcd.setCursor(0,0);
@@ -333,16 +340,21 @@ void nextFeeding(int i) {
     }
 }
 
+// prints next feeding time before the first feeding has already occurred; must check the next closest feeding time regardless of order
 void firstNextFeeding(){
+
+  // display message
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("Next feeding");
   lcd.setCursor(0,1);
   lcd.print("time: ");
 
+  // declare local variables
   int nextTime = 1440;
   int a;
 
+  // loops through current feeding times
   for (int i = 0; i < numFeeding; i++){
     if((targetTimes[i] - currentTime < nextTime) && (targetTimes[i] - currentTime >= 0)) {
       a = i;
