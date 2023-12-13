@@ -344,7 +344,7 @@ void firstNextFeeding(){
   int a;
 
   for (int i = 0; i < numFeeding; i++){
-    if(targetTimes[i] - currentTime < nextTime) {
+    if((targetTimes[i] - currentTime < nextTime) && (targetTimes[i] - currentTime >= 0)) {
       a = i;
       nextTime = targetTimes[i] - currentTime;
     }
