@@ -42,8 +42,16 @@ void setup() {
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
 
+  myservo.attach(12);
+
   //figure out this part later
   num1 = random(1, 500);
+
+
+  myservo.write(0);
+  delay(1000);
+  myservo.write(180);
+  delay(1000);
 
 }
 
@@ -52,10 +60,10 @@ void loop() {
 
 }
 
-void printProblem{
+// void printProblem{
 
-}
+// }
 
-void getAnswer{
+// void getAnswer{
 
-}
+// }
