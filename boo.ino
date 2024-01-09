@@ -33,7 +33,8 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 // piezo!
 const int PIE = 10;
 
-int num1, num2, op, ans;
+int num1, num2, op, ans, input;
+char key;
 
 void setup() {
   Serial.begin(9600);
@@ -56,7 +57,7 @@ void loop() {
 
 }
 
-void generateProblem{
+void generateProblem(){
   
   op = random(1, 5);
 
@@ -86,9 +87,46 @@ void generateProblem{
 
   }
 
-
 }
 
-boolean getAnswer{
+void printProblem(){
+  lcd.clear();
+  lcd.setCursor(0,0);
+  lcd.print("What is ");
+  lcd.print(num1);
+  if (op == 1){
+      lcd.print("+");
+    } else if (op == 2){
+      lcd.print("-");
+    } else if (op == 3){
+      lcd.print("*");
+    } else if (op == 4){
+      lcd.print("/");
+    }
+  lcd.print(num2);
+  lcd.print("?");
+}
 
+bool getAns(){
+  lcd.setCursor(0,1);
+
+  key = keypad.getKey();
+
+  while(key == NO_KEY) {
+    key = keypad.getKey();
+  }
+
+  input = 10*(key-'0');
+  lcd.print(key);
+
+  key = keypad.getKey();
+
+  while(key == NO_KEY) {
+    key = keypad.getKey();
+  }
+
+  input = input + (key-'0');
+  lcd.print(key);
+
+  return(input == ans);
 }
