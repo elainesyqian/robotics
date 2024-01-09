@@ -33,7 +33,7 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 // piezo!
 const int PIE = 10;
 
-int num1, num2, op;
+int num1, num2, op, ans;
 
 void setup() {
   Serial.begin(9600);
@@ -43,10 +43,6 @@ void setup() {
   lcd.clear();
 
   myservo.attach(12);
-
-  //figure out this part later
-  num1 = random(1, 500);
-
 
   myservo.write(0);
   delay(1000);
@@ -60,10 +56,39 @@ void loop() {
 
 }
 
-// void printProblem{
+void generateProblem{
+  
+  op = random(1, 5);
 
-// }
+  while(true){
+    num1 = random(10, 100);
+    num2 = random(10, 100);
 
-// void getAnswer{
+    if (op == 1){
+      ans = num1 + num2;
+    } else if (op == 2){
+      ans = num1 - num2;
+    } else if (op == 3){
+      ans = num1 * num2;
+    } else if (op == 4){
+      ans = (int) num1 / num2;
+    }
 
-// }
+    if(ans < 100 && ans > 10){
+      if(op == 4){
+        if(ans * num2 == num1){
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+
+  }
+
+
+}
+
+boolean getAnswer{
+
+}
