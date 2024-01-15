@@ -66,7 +66,7 @@ void setup() {
   myservo3.write(90);
 
   myservo4.attach(53);
-  myservo4.write(90);
+  myservo4.write(86);
 
   delay(1500);
   lcd.clear();
@@ -251,15 +251,15 @@ void dispense() {
       break;
 
     case 'C':
-      myservo3.write(100);
+      myservo3.write(97);
       delay(3000);
       myservo3.write(90);
       break;
 
     case 'D':
-      myservo4.write(100);
+      myservo4.write(95);
       delay(3000);
-      myservo4.write(90);
+      myservo4.write(86);
       break;
     }
 
