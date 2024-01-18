@@ -1,11 +1,15 @@
-// Food for Thought
 // Eileen Kuang and Elaine Qian
+// January 17, 2024
+// Food for Thought: Prototype
+// Smart vending machine; pay for snacks with your intellect!
 
 // Include libraries for servo, lcd, and keypad
 #include "Servo.h"
 #include <LiquidCrystal.h>
 #include <Keypad.h>
 #include <EEPROM.h>
+
+// Variable declarations
 
 // Create servo objects:
 Servo myservo1;
@@ -42,30 +46,29 @@ char key, choice;
 long time = 300000; // five minutes in milliseconds
 
 void setup() {
+
   Serial.begin(9600);
   delay(2000);
 
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
   lcd.setCursor(0,0);
+
+  // welcome message
   lcd.print("   Welcome to");
   lcd.setCursor(0,1);
   lcd.print(" Food 4 Thought!");
 
-  myservo1.attach(50);
-  // myservo1.write(100);
-  // delay(3000);
+  myservo1.attach(50); // choice A
   myservo1.write(90);
 
-  myservo2.attach(51);
-  // myservo2.write(100);
-  // delay(3000);
+  myservo2.attach(51); // choice B
   myservo2.write(85);
 
-  myservo3.attach(52);
-  myservo3.write(90);
+  myservo3.attach(52); // choice C
+  myservo3.write(88);
 
-  myservo4.attach(53);
+  myservo4.attach(53); // choice D
   myservo4.write(86);
 
   delay(1500);
@@ -77,9 +80,13 @@ void loop() {
 
   startingPage();
 
+  // while not timed out
   while (wrong < 3){
+
     generateProblem();
     printProblem();
+
+    // if answer is correct
     if (getAns()) {
       dispense();
       wrong = 0;
@@ -88,6 +95,7 @@ void loop() {
       lcd.print("Enjoy your snack!");
       delay(5000);
       startingPage();
+
     } else {
       wrong++;
     }
@@ -97,7 +105,9 @@ void loop() {
   wrong = 0;
 }
 
+// starting prompt; begins program when user enters any key
 void startingPage(){
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print(" Press any key");
@@ -112,14 +122,17 @@ void startingPage(){
   delay(200);
   lcd.clear();
   delay(300);
+
 }
 
+// generates a random arithmetic problem; ensures that the answer is a 2 digit integer
 void generateProblem(){
 
   bool generate = true;
 
   while(generate){
-    reseedRandom();
+
+    reseedRandom(); // generate random seed
 
     op = (int) random(1, 5);
 
@@ -141,13 +154,15 @@ void generateProblem(){
       ans = (int) num1 / num2;
     }
 
+    // checks if answer is two digits
     if(ans < 100 && ans > 10){
+
       if(op == 4){
+        // checks if quotient is an integer
         if(ans * num2 == num1){
           generate = false;
           lcd.print(num1);
           lcd.print(num2);
-
         }
       } else {
         generate = false;
@@ -155,35 +170,41 @@ void generateProblem(){
         lcd.print(num2);
 
       }
+
     }
 
   }
 
 }
 
+// prints the random arithmetic problem to LCD
 void printProblem(){
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("What is ");
   lcd.print(num1);
-  if (op == 1){
+  if (op == 1){ // plus (+)
       lcd.print("+");
-    } else if (op == 2){
+    } else if (op == 2){ // minus (-)
       lcd.print("-");
-    } else if (op == 3){
+    } else if (op == 3){ // multiplication (*)
       lcd.print("*");
-    } else if (op == 4){
+    } else if (op == 4){ // division (/)
       lcd.print("/");
     }
   lcd.print(num2);
   lcd.print("?");
   delay(10);
+
 }
 
+// receives user answer from keypad input
 bool getAns() {
 
-  lcd.setCursor(0,1);
+  lcd.setCursor(0,1); // prints answer to LCD on the second row
 
+  // read keypad input
   key = keypad.getKey();
 
   while(key == NO_KEY) {
@@ -205,18 +226,26 @@ bool getAns() {
   lcd.clear();
   lcd.setCursor(0, 0);
 
+  // piezo sound effects
   if (input == ans){
     lcd.print("Correct!");
-    delay(2000);
+    tone(PIE, 4110); // C8
+    delay(300);
+    noTone(PIE);
+    delay(1700);
   } else {
     lcd.print("Incorrect >:((");
-    delay(2000);
+    tone(PIE, 1047); // C6 
+    delay(1700);
+    noTone(PIE);
+    delay(300);
   }
 
-  return(input == ans);
+  return(input == ans); // return true/false
 
 }
 
+// dispenses the appropriate snack, based on user's choice
 void dispense() {
 
   lcd.clear();
@@ -231,50 +260,55 @@ void dispense() {
     key = keypad.getKey();
   }
 
+  // prints user input to screen
   choice = key;
   lcd.setCursor(0,1);
   lcd.print(choice);
 
-    // dispense snack based on user choice
+  // dispense snack by rotating servos
   switch(choice){
 
     case 'A':
       myservo1.write(100);
-      delay(3000);
-      myservo1.write(90);
+      delay(1800);
+      myservo1.write(90); // stop
       break;
 
     case 'B':
-      myservo2.write(95);
-      delay(3000);
-      myservo2.write(85);
+      myservo2.write(94);
+      delay(1800);
+      myservo2.write(85); // stop
       break;
 
     case 'C':
-      myservo3.write(97);
-      delay(3000);
-      myservo3.write(90);
+      myservo3.write(96);
+      delay(1800);
+      myservo3.write(88); // stop
       break;
 
     case 'D':
       myservo4.write(95);
-      delay(3000);
-      myservo4.write(86);
+      delay(1900);
+      myservo4.write(86); // stop
       break;
     }
 
 }
 
+// when user answers 5 answers wrong consecutively
 void timeOut(){
+
   lcd.clear();
   lcd.setCursor(0,0);
   lcd.print("You're timed out!");
   delay(time);
+
 }
 
-void reseedRandom( void )
-{
-  static const uint32_t HappyPrime = 937;
+// re-generates random seed, allows arduino random to be 'truly' random
+void reseedRandom() {
+  
+  static const uint32_t prime = 937;
   union
   {
     uint32_t i;
@@ -284,22 +318,24 @@ void reseedRandom( void )
   int8_t i;
   unsigned int seed;
   
-  for ( i=0; i < sizeof(raw.b); ++i )
-  {
+  for ( i=0; i < sizeof(raw.b); i++) {
+
     raw.b[i] = EEPROM.read( i );
+
   }
 
-  do
-  {
-    raw.i += HappyPrime;
+  do {
+
+    raw.i += prime;
     seed = raw.i & 0x7FFFFFFF;
+
   }
-  while ( (seed < 1) || (seed > 2147483646) );
+  while ((seed < 1) || (seed > 2147483646));
 
-  randomSeed( seed );  
+  randomSeed(seed);  
 
-  for ( i=0; i < sizeof(raw.b); ++i )
-  {
+  for ( i=0; i < sizeof(raw.b); ++i ) {
     EEPROM.write( i, raw.b[i] );
   }
+
 }
