@@ -223,6 +223,7 @@ bool getAns() {
   input = input + (key-'0');
   lcd.print(key);
   delay(2000);
+
   lcd.clear();
   lcd.setCursor(0, 0);
 
@@ -260,23 +261,52 @@ void dispense() {
     key = keypad.getKey();
   }
 
+  lcd.setCursor(0,1);
+  lcd.print(key);
+  delay(1000);
+
+  while (key != 'A' && key != 'B' && key != 'C' && key != 'D'){
+    lcd.clear();
+    lcd.setCursor(0,0);
+
+    lcd.print("Please enter a");
+    lcd.setCursor(0,1);
+    lcd.print("valid option");
+    delay(2000);
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+
+    lcd.print("Enter ur choice: ");
+
+    // receive user input
+    key = keypad.getKey();
+
+    while(key == NO_KEY) {
+      key = keypad.getKey();
+    }
+
+    lcd.setCursor(0,1);
+    lcd.print(key);
+    delay(1000);
+  }
+
+
   // prints user input to screen
   choice = key;
-  lcd.setCursor(0,1);
-  lcd.print(choice);
 
   // dispense snack by rotating servos
   switch(choice){
 
     case 'A':
       myservo1.write(100);
-      delay(1800);
+      delay(1900);
       myservo1.write(90); // stop
       break;
 
     case 'B':
       myservo2.write(94);
-      delay(1800);
+      delay(1850);
       myservo2.write(85); // stop
       break;
 
@@ -287,8 +317,8 @@ void dispense() {
       break;
 
     case 'D':
-      myservo4.write(95);
-      delay(1900);
+      myservo4.write(97);
+      delay(2000);
       myservo4.write(86); // stop
       break;
     }
