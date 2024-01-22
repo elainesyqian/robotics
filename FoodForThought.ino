@@ -1,6 +1,6 @@
 // Eileen Kuang and Elaine Qian
 // January 17, 2024
-// Food for Thought: Prototype
+// Food for Thought: Final Code
 // Smart vending machine; pay for snacks with your intellect!
 
 // Include libraries for servo, lcd, and keypad
@@ -40,29 +40,18 @@ LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
 // piezo!
 const int PIE = A15;
 
+// stores values for math questions
 int num1, num2, op, ans, input;
 int wrong=0; // counts consecutive wrong answers
 char key, choice;
 long time = 300000; // five minutes in milliseconds
 
-// rgb lights
-int redPin = A8;
-int greenPin = A9;
-int bluePin = A10;
-
 // sets up pins and displays welcome message
 void setup() {
 
   Serial.begin(9600);
-  delay(2000);
+  delay(1500);
 
-  // set up RGB pins
-  pinMode(redPin, OUTPUT);
-  pinMode(greenPin, OUTPUT);
-  pinMode(bluePin, OUTPUT);
-
-  setColour(255, 255, 255);
-  delay(10000);
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
   lcd.setCursor(0,0);
@@ -84,16 +73,13 @@ void setup() {
   myservo4.attach(53); // choice D
   myservo4.write(86);
 
-  delay(1500);
+  delay(2000);
   lcd.clear();
 
 }
 
 // loops input/output logic
 void loop() {
-
-  setColour(255, 255, 255);
-  delay(1000);
 
   startingPage();
 
@@ -314,7 +300,6 @@ void dispense() {
       myservo1.write(100);
       delay(1900);
       myservo1.write(90); // stop
-      setColour(255, 0, 0);
       delay(1000);
       break;
 
@@ -322,7 +307,6 @@ void dispense() {
       myservo2.write(94);
       delay(1850);
       myservo2.write(85); // stop
-      setColour(0, 255, 0);
       delay(1000);
       break;
 
@@ -330,7 +314,6 @@ void dispense() {
       myservo3.write(96);
       delay(1800);
       myservo3.write(88); // stop
-      setColour(0, 0, 255);
       delay(1000);
       break;
 
@@ -338,7 +321,6 @@ void dispense() {
       myservo4.write(97);
       delay(2000);
       myservo4.write(86); // stop
-      setColour(100, 100, 0);
       delay(1000);
       break;
     }
