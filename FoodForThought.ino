@@ -45,11 +45,24 @@ int wrong=0; // counts consecutive wrong answers
 char key, choice;
 long time = 300000; // five minutes in milliseconds
 
+// rgb lights
+int redPin = A8;
+int greenPin = A9;
+int bluePin = A10;
+
+// sets up pins and displays welcome message
 void setup() {
 
   Serial.begin(9600);
   delay(2000);
 
+  // set up RGB pins
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
+
+  setColour(255, 255, 255);
+  delay(10000);
   lcd.begin(16, 2); //sets up rows and columns on the screen
   lcd.clear();
   lcd.setCursor(0,0);
@@ -76,7 +89,11 @@ void setup() {
 
 }
 
+// loops input/output logic
 void loop() {
+
+  setColour(255, 255, 255);
+  delay(1000);
 
   startingPage();
 
@@ -161,14 +178,9 @@ void generateProblem(){
         // checks if quotient is an integer
         if(ans * num2 == num1){
           generate = false;
-          lcd.print(num1);
-          lcd.print(num2);
         }
       } else {
         generate = false;
-        lcd.print(num1);
-        lcd.print(num2);
-
       }
 
     }
@@ -265,6 +277,7 @@ void dispense() {
   lcd.print(key);
   delay(1000);
 
+  // try catch to make sure user choses a valid snack
   while (key != 'A' && key != 'B' && key != 'C' && key != 'D'){
     lcd.clear();
     lcd.setCursor(0,0);
@@ -291,7 +304,6 @@ void dispense() {
     delay(1000);
   }
 
-
   // prints user input to screen
   choice = key;
 
@@ -302,24 +314,32 @@ void dispense() {
       myservo1.write(100);
       delay(1900);
       myservo1.write(90); // stop
+      setColour(255, 0, 0);
+      delay(1000);
       break;
 
     case 'B':
       myservo2.write(94);
       delay(1850);
       myservo2.write(85); // stop
+      setColour(0, 255, 0);
+      delay(1000);
       break;
 
     case 'C':
       myservo3.write(96);
       delay(1800);
       myservo3.write(88); // stop
+      setColour(0, 0, 255);
+      delay(1000);
       break;
 
     case 'D':
       myservo4.write(97);
       delay(2000);
       myservo4.write(86); // stop
+      setColour(100, 100, 0);
+      delay(1000);
       break;
     }
 
@@ -368,4 +388,11 @@ void reseedRandom() {
     EEPROM.write( i, raw.b[i] );
   }
 
+}
+
+// controls colour for RGB
+void setColour(int red, int green, int blue){
+  analogWrite(redPin, red);
+  analogWrite(greenPin, green);
+  analogWrite(bluePin, blue);
 }
